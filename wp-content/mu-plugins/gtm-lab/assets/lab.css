@@ -1,0 +1,253 @@
+/* dataLayer Lab — front-end styling. Dark, unconditionally.
+ *
+ * Twenty Twenty-Five paints `body` from --wp--preset--color--base / --contrast and
+ * ignores the OS preference, so redefining those two flips the entire theme —
+ * header, post title, footer, block defaults — not just the .dllab wrapper.
+ * `html:root` (0,1,1) out-specifies the theme's `:root` (0,1,0) regardless of
+ * stylesheet order, so no !important is needed.
+ */
+html:root {
+	--wp--preset--color--base: #0f141a;
+	--wp--preset--color--contrast: #e3eaf2;
+	/* Makes form controls, scrollbars and the caret render dark natively. */
+	color-scheme: dark;
+}
+
+html, body {
+	background-color: #0f141a;
+	color: #e3eaf2;
+}
+
+/* The two places core hardcodes #fff rather than reading the preset: the
+ * navigation submenu dropdown, and the mobile menu overlay. Without these the
+ * hamburger menu opens white-on-black below the theme's breakpoint. */
+.wp-block-navigation:not(.has-background) .wp-block-navigation__submenu-container,
+.wp-block-navigation:not(.has-background) .wp-block-navigation__responsive-container.is-menu-open {
+	background-color: #161d26;
+	border-color: #2b3644;
+}
+.wp-block-navigation:not(.has-text-color) .wp-block-navigation__responsive-container.is-menu-open {
+	color: #e3eaf2;
+}
+
+.dllab {
+	--dl-bg: #161d26;
+	--dl-fg: #e3eaf2;
+	--dl-mut: #9fb0c4;   /* ~8:1 on --dl-bg */
+	--dl-line: #2b3644;
+	--dl-accent: #6fb4ff;
+	--dl-warn: #ffc46b;
+	--dl-warnbg: #2b2113;
+	--dl-code: #1b232c;
+	max-width: 860px;
+	margin: 0 auto;
+	color: var(--dl-fg);
+	font-size: 16px;
+	line-height: 1.6;
+}
+
+.dllab h3 { margin: 0 0 .5rem; font-size: 1.05rem; }
+.dllab h4 { margin: 0 0 .4rem; font-size: .95rem; }
+.dllab code { background: var(--dl-code); padding: .1em .4em; border-radius: 4px; font-size: .82em; }
+.dllab pre.dllab-code {
+	background: var(--dl-code); padding: .7rem .9rem; border-radius: 6px;
+	overflow-x: auto; font-size: .82rem; margin: .6rem 0;
+}
+
+/* The lab renders its own <h1>, so drop the theme's post-title block on lab
+ * pages only — .dllab-page is added by the plugin's body_class filter. */
+.dllab-page .wp-block-post-title { display: none; }
+
+.dllab-hero { padding: 1.2rem 0 .4rem; }
+.dllab-hero h1 {
+	margin: 0 0 .4rem;
+	font-size: 2rem;
+	line-height: 1.15;
+	font-weight: 600;
+	letter-spacing: -.02em;
+}
+.dllab-hero > p { margin: .3rem 0; }
+
+.dllab-note {
+	color: var(--dl-mut);
+	font-size: .88rem;
+	margin: .3rem 0 .9rem;
+}
+
+.dllab-panelblock {
+	border: 1px solid var(--dl-line);
+	border-radius: 10px;
+	padding: 1rem 1.1rem;
+	margin: 0 0 1rem;
+	background: var(--dl-bg);
+}
+
+.dllab-warn {
+	border-color: color-mix(in srgb, var(--dl-warn) 45%, transparent);
+	background: var(--dl-warnbg);
+}
+.dllab-warn h3 { color: var(--dl-warn); }
+
+.dllab-error { padding: 1rem; border: 1px dashed #c33; border-radius: 8px; }
+
+/* Rows -------------------------------------------------------------- */
+
+.dllab-row {
+	display: flex; align-items: center; gap: .7rem; flex-wrap: wrap;
+	padding: .45rem 0;
+	border-top: 1px solid var(--dl-line);
+}
+.dllab-row:first-of-type { border-top: 0; }
+.dllab-row > code { margin-left: auto; color: var(--dl-mut); background: transparent; font-size: .78rem; }
+
+.dllab-list { margin: .4rem 0 0; padding-left: 1.2rem; font-size: .9rem; color: var(--dl-mut); }
+.dllab-list li { margin: .3rem 0; }
+
+/* Controls ---------------------------------------------------------- */
+
+.dllab-btn {
+	display: inline-flex; align-items: center; gap: .4rem;
+	background: var(--dl-accent); color: #fff; border: 1px solid transparent;
+	border-radius: 7px; padding: .45rem .9rem; font-size: .88rem; font-weight: 600;
+	cursor: pointer; line-height: 1.2;
+}
+.dllab-btn:hover { filter: brightness(1.08); }
+.dllab-btn[disabled] { opacity: .45; cursor: not-allowed; }
+.dllab-btn-ghost { background: transparent; color: var(--dl-accent); border-color: var(--dl-line); }
+.dllab-btn-sm { padding: .25rem .6rem; font-size: .8rem; }
+.dllab-ico { opacity: .8; }
+
+.dllab-link { color: var(--dl-accent); text-decoration: underline; }
+
+/* Index grid -------------------------------------------------------- */
+
+.dllab-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: .8rem; margin: 1rem 0; }
+.dllab-card {
+	display: block; text-decoration: none; color: inherit;
+	border: 1px solid var(--dl-line); border-radius: 10px; padding: .9rem 1rem;
+}
+.dllab-card:hover { border-color: var(--dl-accent); }
+.dllab-card h3 { color: var(--dl-accent); }
+.dllab-card p { margin: 0; font-size: .85rem; color: var(--dl-mut); }
+
+.dllab-nav {
+	display: flex; flex-wrap: wrap; gap: .8rem; margin: 1.5rem 0 3rem;
+	padding-top: .8rem; border-top: 1px solid var(--dl-line);
+	font-size: .84rem;
+}
+.dllab-nav a { color: var(--dl-mut); text-decoration: none; }
+.dllab-nav a:hover { color: var(--dl-accent); text-decoration: underline; }
+
+/* Hover ------------------------------------------------------------- */
+
+.dllab-cards { display: flex; gap: .8rem; flex-wrap: wrap; }
+.dllab-hovercard {
+	flex: 1 1 150px; border: 1px solid var(--dl-line); border-radius: 9px;
+	padding: 1.4rem 1rem; text-align: center; transition: border-color .15s, background .15s;
+}
+.dllab-hovercard:hover { border-color: var(--dl-accent); }
+.dllab-hovercard.is-tracked { background: color-mix(in srgb, var(--dl-accent) 12%, transparent); }
+.dllab-hovercard strong { display: block; }
+.dllab-hovercard span { font-size: .78rem; color: var(--dl-mut); }
+
+.dllab-mousebox {
+	display: flex; flex-wrap: wrap; gap: .4rem; padding: 1.2rem;
+	border: 1px dashed var(--dl-line); border-radius: 9px;
+}
+.dllab-chip { padding: .3rem .7rem; border-radius: 20px; background: var(--dl-code); font-size: .78rem; }
+.dllab-counters { display: flex; gap: 1.4rem; margin-top: .6rem; font-size: .85rem; color: var(--dl-mut); }
+.dllab-counters b { color: var(--dl-fg); font-variant-numeric: tabular-nums; }
+
+.dllab-menu { position: relative; display: inline-block; }
+.dllab-menu-list {
+	position: absolute; top: 100%; left: 0; min-width: 170px; z-index: 5;
+	background: var(--dl-bg); border: 1px solid var(--dl-line); border-radius: 8px;
+	padding: .3rem; display: none;
+}
+.dllab-menu:hover .dllab-menu-list { display: block; }
+.dllab-menu-list a { display: block; padding: .35rem .6rem; border-radius: 5px; color: inherit; text-decoration: none; font-size: .87rem; }
+.dllab-menu-list a:hover { background: var(--dl-code); }
+
+.dllab-promo {
+	border: 2px dashed var(--dl-accent); border-radius: 9px;
+	padding: 1.6rem 1rem; text-align: center; margin: .6rem 0;
+}
+.dllab-spacer { height: 55vh; display: grid; place-items: center; color: var(--dl-mut); font-size: .8rem; }
+
+/* Scroll ------------------------------------------------------------ */
+
+.dllab-scrollmark {
+	min-height: 60vh; display: flex; flex-direction: column; justify-content: center;
+	border-top: 1px solid var(--dl-line); padding: 1rem 0;
+}
+.dllab-scrollmark span { font-size: 2.4rem; font-weight: 700; color: var(--dl-line); }
+.dllab-scrollmark.is-hit span { color: var(--dl-accent); }
+.dllab-scrollmark p { margin: .3rem 0 0; font-size: .88rem; color: var(--dl-mut); max-width: 55ch; }
+
+.dllab-overflow {
+	height: 190px; overflow-y: auto; border: 1px solid var(--dl-line);
+	border-radius: 8px; padding: .8rem 1rem;
+}
+.dllab-overflow p { margin: 0 0 .9rem; }
+
+.dllab-carousel {
+	display: flex; gap: .7rem; overflow-x: auto; padding: .6rem;
+	border: 1px solid var(--dl-line); border-radius: 8px;
+}
+.dllab-carousel > div {
+	flex: 0 0 150px; height: 100px; display: grid; place-items: center;
+	background: var(--dl-code); border-radius: 7px; font-size: 1.5rem; font-weight: 700; color: var(--dl-mut);
+}
+
+/* Forms ------------------------------------------------------------- */
+
+.dllab-form { display: grid; gap: .7rem; max-width: 420px; }
+.dllab-form label { display: grid; gap: .2rem; font-size: .85rem; font-weight: 600; }
+.dllab-form label.dllab-inline { display: flex; align-items: center; gap: .4rem; font-weight: 400; }
+.dllab-form input, .dllab-form select, .dllab-form textarea {
+	font: inherit; font-size: .9rem; font-weight: 400;
+	padding: .45rem .6rem; border: 1px solid var(--dl-line); border-radius: 6px;
+	background: var(--dl-bg); color: var(--dl-fg); width: 100%;
+}
+.dllab-form input[type="checkbox"], .dllab-form input[type="radio"] { width: auto; }
+.dllab-form fieldset { border: 1px solid var(--dl-line); border-radius: 7px; padding: .5rem .8rem; }
+.dllab-form legend { font-size: .8rem; color: var(--dl-mut); padding: 0 .3rem; }
+.dllab-pii {
+	font-weight: 400; font-size: .72rem; color: var(--dl-warn);
+	border: 1px solid currentColor; border-radius: 4px; padding: 0 .3em;
+}
+.dllab-success {
+	margin-top: .8rem; padding: .8rem 1rem; border-radius: 8px;
+	background: color-mix(in srgb, #2ea44f 18%, transparent);
+	border: 1px solid color-mix(in srgb, #2ea44f 45%, transparent);
+	font-weight: 600;
+}
+.dllab-steps .dllab-step { border: 1px solid var(--dl-line); border-radius: 8px; padding: .9rem 1rem; }
+
+/* SPA --------------------------------------------------------------- */
+
+.dllab-tabs { display: flex; gap: .3rem; border-bottom: 1px solid var(--dl-line); }
+.dllab-tab {
+	background: none; border: 0; border-bottom: 2px solid transparent;
+	padding: .5rem .9rem; font: inherit; font-size: .88rem; cursor: pointer; color: var(--dl-mut);
+}
+.dllab-tab.is-active { color: var(--dl-accent); border-bottom-color: var(--dl-accent); font-weight: 600; }
+.dllab-tabpanel { padding: 1.2rem 0; }
+
+/* Ecommerce --------------------------------------------------------- */
+
+.dllab-products { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: .8rem; }
+.dllab-product { border: 1px solid var(--dl-line); border-radius: 9px; padding: .9rem; }
+.dllab-product h4 { margin: 0 0 .2rem; font-size: .92rem; }
+.dllab-price { display: block; color: var(--dl-mut); font-size: .85rem; margin-bottom: .6rem; }
+.dllab-cart {
+	border: 1px solid var(--dl-line); border-radius: 8px; padding: .8rem 1rem;
+	margin-bottom: .8rem; font-size: .88rem; min-height: 3rem;
+}
+
+/* Edge -------------------------------------------------------------- */
+
+.dllab-iframe { width: 100%; height: 170px; border: 1px solid var(--dl-line); border-radius: 8px; background: var(--dl-code); }
+
+/* Keep the inspector panel from covering the last section. */
+body { padding-bottom: 4rem; }

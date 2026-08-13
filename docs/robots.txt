@@ -1,0 +1,5 @@
+# Measurement lab — public so that Google's own tools can reach it, but there is
+# no reason for it to be indexed, and indexed pages mean strangers generating
+# sessions in whatever GA4 property it points at.
+User-agent: *
+Disallow: /

@@ -1,0 +1,20 @@
+# Local configuration — may contain your GTM/GA4 IDs and environment tokens.
+# Copy .env.example to .env; never commit .env itself.
+.env
+
+# Editor / tooling state
+.claude/
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# WordPress runtime state. Core, plugins, themes and the database all live in
+# Docker named volumes, not here — only mu-plugins and uploads are bind-mounted.
+wp-content/uploads/*
+!wp-content/uploads/.gitkeep
+wp-content/debug.log
+*.log
+
+# docs/ IS committed — it is the GitHub Pages build output.
+# Regenerate with `make static`.
