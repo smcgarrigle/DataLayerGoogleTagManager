@@ -58,6 +58,16 @@ html, body {
  * pages only — .dllab-page is added by the plugin's body_class filter. */
 .dllab-page .wp-block-post-title { display: none; }
 
+/* Hiding the h1 is not enough: the theme gives <main> an inline margin-top and
+ * wraps the title in a group with inline padding-top, both spacing--60
+ * (clamp(30px, 7vw, 70px)). With the title gone that is ~140px of empty band.
+ * Inline styles only yield to !important.
+ *
+ * padding-BOTTOM on that wrapper is deliberately left alone — the wrapper holds
+ * the entry content too, so it is the page's bottom spacing, not the title's. */
+.dllab-page main { margin-top: 2rem !important; }
+.dllab-page main > .wp-block-group:has(> .wp-block-post-title) { padding-top: 0 !important; }
+
 .dllab-hero { padding: 1.2rem 0 .4rem; }
 .dllab-hero h1 {
 	margin: 0 0 .4rem;
