@@ -16,7 +16,7 @@ container ID lights up the merged-model and GA4-hit views on top.
 numbered pitfalls with the lab page that reproduces each one.
 
 ⚡ **[WP_GTM_CUSTOM_JS_EXAMPLES.md](WP_GTM_CUSTOM_JS_EXAMPLES.md)** — 9 production-grade Custom JavaScript snippets deployable via GTM to capture generic WordPress events (Gutenberg blocks, TOC jumps, taxonomy meta, WP search, menus, comments, form plugins & WooCommerce).
-
+👉 **[View the live Custom JS Examples webpage](https://smcgarrigle.github.io/DataLayerGoogleTagManager/custom-js-examples.html)**
 
 ---
 
