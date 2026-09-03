@@ -140,6 +140,47 @@ PY
 # with an underscore. WordPress doesn't emit any, but the marker costs nothing.
 touch "${OUT}/.nojekyll"
 
+# -- Markdown Viewer for Custom JS Examples --
+cp WP_GTM_CUSTOM_JS_EXAMPLES.md "${OUT}/"
+cat > "${OUT}/custom-js-examples.html" <<'EOF'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Custom JS Examples - dataLayer Lab</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown.min.css">
+    <style>
+        body { box-sizing: border-box; min-width: 200px; max-width: 980px; margin: 0 auto; padding: 45px; background: #fff; }
+        @media (max-width: 767px) { body { padding: 15px; } }
+        .back-link { display: inline-block; margin-bottom: 20px; text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body class="markdown-body">
+    <a href="index.html" class="back-link">← Back to dataLayer Lab</a>
+    <div id="content">Loading examples...</div>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        fetch('WP_GTM_CUSTOM_JS_EXAMPLES.md')
+            .then(res => res.text())
+            .then(text => { document.getElementById('content').innerHTML = marked.parse(text); })
+            .catch(err => { document.getElementById('content').innerHTML = 'Error loading markdown.'; });
+    </script>
+</body>
+</html>
+EOF
+
+# Inject a link to it in the static index.html
+python3 - "${OUT}/index.html" <<'PY'
+import sys
+with open(sys.argv[1], 'r') as f:
+    text = f.read()
+btn = '<div style="margin-bottom:20px; text-align:center;"><a href="custom-js-examples.html" class="dllab-btn dllab-btn-ghost">View Custom JS Examples</a></div>'
+text = text.replace('<div class="dllab-grid">', btn + '\n\t<div class="dllab-grid">')
+with open(sys.argv[1], 'w') as f:
+    f.write(text)
+PY
+
 cat > "${OUT}/robots.txt" <<'EOF'
 # Measurement lab — public so that Google's own tools can reach it, but there is
 # no reason for it to be indexed, and indexed pages mean strangers generating
