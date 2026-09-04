@@ -68,6 +68,23 @@ html, body {
 .dllab-page main { margin-top: 2rem !important; }
 .dllab-page main > .wp-block-group:has(> .wp-block-post-title) { padding-top: 0 !important; }
 
+/* Twenty Twenty-Five's footer pattern ships two placeholder nav columns — Blog,
+ * About, FAQs, Authors / Events, Shop, Patterns, Themes — every one of them
+ * pointing at '#'. On a measurement lab that is eight dead click targets sitting
+ * below the real content, so drop the group that holds them. The site title,
+ * tagline and theme credit in the same footer are left alone.
+ *
+ * :has(> …) matches only the nav wrapper, not its ancestors, and `footer`
+ * keeps this off the header's real navigation. */
+.dllab-page footer .wp-block-group:has(> .wp-block-navigation) { display: none; }
+
+/* Removing the navs leaves the pattern's spacers (spacing--40 and --70) and its
+ * generous top padding standing over nothing — the same empty-band problem the
+ * hidden post title had. The outer padding is an inline style, so it needs
+ * !important to yield. */
+.dllab-page footer .wp-block-spacer { display: none; }
+.dllab-page footer > .wp-block-group { padding-top: var(--wp--preset--spacing--30) !important; }
+
 .dllab-hero { padding: 1.2rem 0 .4rem; }
 .dllab-hero h1 {
 	margin: 0 0 .4rem;
