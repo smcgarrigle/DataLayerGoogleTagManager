@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>WordPress Custom JS Examples - dataLayer Lab</title>
+    <title>Ghost Custom JS Examples - dataLayer Lab</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex, nofollow" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown.min.css">
@@ -16,11 +16,11 @@
 </head>
 <body class="markdown-body">
     <a href="index.html" class="back-link">← Back to dataLayer Lab</a>
-    <div class="platform-switcher">Platform: <strong>WordPress</strong> <a href="custom-js-examples-drupal.html">Drupal</a> <a href="custom-js-examples-joomla.html">Joomla</a> <a href="custom-js-examples-magento.html">Magento</a> <a href="custom-js-examples-ghost.html">Ghost</a> </div>
+    <div class="platform-switcher">Platform: <a href="custom-js-examples.html">WordPress</a> <a href="custom-js-examples-drupal.html">Drupal</a> <a href="custom-js-examples-joomla.html">Joomla</a> <a href="custom-js-examples-magento.html">Magento</a> <strong>Ghost</strong> </div>
     <div id="content">Loading examples...</div>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
-        fetch('WP_GTM_CUSTOM_JS_EXAMPLES.md')
+        fetch('GHOST_GTM_CUSTOM_JS_EXAMPLES.md')
             .then(res => res.text())
             .then(text => { document.getElementById('content').innerHTML = marked.parse(text); })
             .catch(err => { document.getElementById('content').innerHTML = 'Error loading markdown.'; });

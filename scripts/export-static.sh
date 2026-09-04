@@ -140,28 +140,56 @@ PY
 # with an underscore. WordPress doesn't emit any, but the marker costs nothing.
 touch "${OUT}/.nojekyll"
 
-# -- Markdown Viewer for Custom JS Examples --
-cp WP_GTM_CUSTOM_JS_EXAMPLES.md "${OUT}/"
-cat > "${OUT}/custom-js-examples.html" <<'EOF'
+# -- Markdown Viewers for the per-CMS Custom JS Examples --
+# The WordPress page keeps the unqualified filename: it was published first and
+# the URL is already out in the world.
+CMS_PAGES=(
+	"custom-js-examples|WP_GTM_CUSTOM_JS_EXAMPLES.md|WordPress"
+	"custom-js-examples-drupal|DRUPAL_GTM_CUSTOM_JS_EXAMPLES.md|Drupal"
+	"custom-js-examples-joomla|JOOMLA_GTM_CUSTOM_JS_EXAMPLES.md|Joomla"
+	"custom-js-examples-magento|MAGENTO_GTM_CUSTOM_JS_EXAMPLES.md|Magento"
+	"custom-js-examples-ghost|GHOST_GTM_CUSTOM_JS_EXAMPLES.md|Ghost"
+)
+
+for entry in "${CMS_PAGES[@]}"; do
+	IFS='|' read -r slug md label <<< "${entry}"
+	cp "${md}" "${OUT}/"
+
+	# Sibling links, with the current platform rendered as plain text.
+	switcher=""
+	for other in "${CMS_PAGES[@]}"; do
+		IFS='|' read -r oslug omd olabel <<< "${other}"
+		if [[ "${oslug}" == "${slug}" ]]; then
+			switcher+="<strong>${olabel}</strong> "
+		else
+			switcher+="<a href=\"${oslug}.html\">${olabel}</a> "
+		fi
+	done
+
+	cat > "${OUT}/${slug}.html" <<EOF
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Custom JS Examples - dataLayer Lab</title>
+    <title>${label} Custom JS Examples - dataLayer Lab</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown.min.css">
     <style>
         body { box-sizing: border-box; min-width: 200px; max-width: 980px; margin: 0 auto; padding: 45px; background: #fff; }
         @media (max-width: 767px) { body { padding: 15px; } }
         .back-link { display: inline-block; margin-bottom: 20px; text-decoration: none; font-weight: bold; }
+        .platform-switcher { margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid #d0d7de; font-size: 14px; }
+        .platform-switcher a, .platform-switcher strong { margin-right: 12px; }
     </style>
 </head>
 <body class="markdown-body">
     <a href="index.html" class="back-link">← Back to dataLayer Lab</a>
+    <div class="platform-switcher">Platform: ${switcher}</div>
     <div id="content">Loading examples...</div>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
-        fetch('WP_GTM_CUSTOM_JS_EXAMPLES.md')
+        fetch('${md}')
             .then(res => res.text())
             .then(text => { document.getElementById('content').innerHTML = marked.parse(text); })
             .catch(err => { document.getElementById('content').innerHTML = 'Error loading markdown.'; });
@@ -169,14 +197,29 @@ cat > "${OUT}/custom-js-examples.html" <<'EOF'
 </body>
 </html>
 EOF
+done
 
-# Inject a link to it in the static index.html
+# Inject the secondary nav into the static index.html, between the hero and the
+# lab card grid. Styled by .dllab-subnav in lab.css.
 python3 - "${OUT}/index.html" <<'PY'
 import sys
+pages = [
+    ('custom-js-examples.html', 'WordPress'),
+    ('custom-js-examples-drupal.html', 'Drupal'),
+    ('custom-js-examples-joomla.html', 'Joomla'),
+    ('custom-js-examples-magento.html', 'Magento'),
+    ('custom-js-examples-ghost.html', 'Ghost'),
+]
+links = '\n\t\t'.join(f'<a href="{href}">{label}</a>' for href, label in pages)
+nav = (
+    '<nav class="dllab-subnav" aria-label="Custom JS examples by platform">\n'
+    '\t\t<span class="dllab-subnav-label">Custom JS recipes</span>\n'
+    f'\t\t{links}\n'
+    '\t</nav>'
+)
 with open(sys.argv[1], 'r') as f:
     text = f.read()
-btn = '<div style="margin-bottom:20px; text-align:center;"><a href="custom-js-examples.html" class="dllab-btn dllab-btn-ghost">View Custom JS Examples</a></div>'
-text = text.replace('<div class="dllab-grid">', btn + '\n\t<div class="dllab-grid">')
+text = text.replace('<div class="dllab-grid">', nav + '\n\t<div class="dllab-grid">')
 with open(sys.argv[1], 'w') as f:
     f.write(text)
 PY
