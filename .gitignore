@@ -18,3 +18,6 @@ wp-content/debug.log
 
 # docs/ IS committed — it is the GitHub Pages build output.
 # Regenerate with `make static`.
+
+# Private working notes, kept out of the public repo.
+ROADMAP.md
