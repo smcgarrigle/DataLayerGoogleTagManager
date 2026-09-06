@@ -68,6 +68,11 @@ html, body {
 .dllab-page main { margin-top: 2rem !important; }
 .dllab-page main > .wp-block-group:has(> .wp-block-post-title) { padding-top: 0 !important; }
 
+/* The header's Page List block lists every published page, front page included,
+ * so 'dataLayer Lab' appears twice in a row — once as the site title, once as a
+ * nav item. Drop the nav copy; the title is already a link home. */
+.dllab-page .wp-block-page-list .menu-item-home { display: none; }
+
 /* Twenty Twenty-Five's footer pattern ships two placeholder nav columns — Blog,
  * About, FAQs, Authors / Events, Shop, Patterns, Themes — every one of them
  * pointing at '#'. On a measurement lab that is eight dead click targets sitting
