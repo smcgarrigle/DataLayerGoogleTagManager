@@ -51,8 +51,9 @@ HTML;
 		<p>Every page below pushes structured events into <code>window.dataLayer</code>. The panel in the
 		bottom-right shows each push as it happens, the merged GTM data model, and any GA4
 		<code>/g/collect</code> hits that leave the browser.</p>
-		<p class="dllab-note">Open GTM Preview and GA4 DebugView side by side with this panel — when the three
-		disagree, the disagreement is the lesson.</p>
+		<p class="dllab-note">With a container connected, open GTM's Preview mode and GA4's DebugView alongside
+		the inspector panel. The three show the same event at successive stages — pushed, resolved by GTM,
+		received by GA4 — so where they disagree, the gap shows which stage changed or dropped it.</p>
 	</header>
 	<div class="dllab-grid">{$cards}</div>
 	<div class="dllab-panelblock">

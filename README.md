@@ -15,8 +15,22 @@ container ID lights up the merged-model and GA4-hit views on top.
 📖 **[SETUP.md](SETUP.md)** — full setup, the localhost/GA4 question answered properly, and 23
 numbered pitfalls with the lab page that reproduces each one.
 
-⚡ **[WP_GTM_CUSTOM_JS_EXAMPLES.md](WP_GTM_CUSTOM_JS_EXAMPLES.md)** — 9 production-grade Custom JavaScript snippets deployable via GTM to capture generic WordPress events (Gutenberg blocks, TOC jumps, taxonomy meta, WP search, menus, comments, form plugins & WooCommerce).
-👉 **[View the live Custom JS Examples webpage](https://smcgarrigle.github.io/DataLayerGoogleTagManager/custom-js-examples.html)**
+⚡ **Custom JS Examples** — 9 production-grade GTM Custom HTML snippets per platform. The GTM
+deployment model and the delegated-listener pattern are identical everywhere; only the selectors
+and the native events differ, so each CMS gets its own file.
+
+| Platform | Recipes | Live page |
+|---|---|---|
+| WordPress | [WP_GTM_CUSTOM_JS_EXAMPLES.md](WP_GTM_CUSTOM_JS_EXAMPLES.md) — Gutenberg blocks, TOC jumps, taxonomy meta, WP search, menus, comments, form plugins, WooCommerce | [view](https://smcgarrigle.github.io/DataLayerGoogleTagManager/custom-js-examples.html) |
+| Drupal | [DRUPAL_GTM_CUSTOM_JS_EXAMPLES.md](DRUPAL_GTM_CUSTOM_JS_EXAMPLES.md) — Olivero/Claro regions, taxonomy terms, core Search, core Comment, Webform AJAX, Drupal Commerce | [view](https://smcgarrigle.github.io/DataLayerGoogleTagManager/custom-js-examples-drupal.html) |
+| Joomla | [JOOMLA_GTM_CUSTOM_JS_EXAMPLES.md](JOOMLA_GTM_CUSTOM_JS_EXAMPLES.md) — Cassiopeia, `com_content` categories/tags, core + Smart Search, print/email/PDF tools, RSForm!Pro, VirtueMart/J2Store | [view](https://smcgarrigle.github.io/DataLayerGoogleTagManager/custom-js-examples-joomla.html) |
+| Magento Open Source | [MAGENTO_GTM_CUSTOM_JS_EXAMPLES.md](MAGENTO_GTM_CUSTOM_JS_EXAMPLES.md) — Luma theme, product tabs, layered nav filters, wishlist/compare, native `ajax:addToCart`, Fotorama gallery | [view](https://smcgarrigle.github.io/DataLayerGoogleTagManager/custom-js-examples-magento.html) |
+| Ghost | [GHOST_GTM_CUSTOM_JS_EXAMPLES.md](GHOST_GTM_CUSTOM_JS_EXAMPLES.md) — Casper `.gh-*` markup, Sodo Search, Portal triggers, native member forms, paid tier selection | [view](https://smcgarrigle.github.io/DataLayerGoogleTagManager/custom-js-examples-ghost.html) |
+
+Recipe numbering is aligned across all five files, so recipe *n* covers the same measurement concern
+on every platform — where a platform has no native equivalent (Joomla and Ghost have no comment
+system; Magento has no comments; Ghost has no cart), that slot covers the nearest native
+interaction instead, and the file says so.
 
 ---
 

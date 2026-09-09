@@ -140,28 +140,81 @@ PY
 # with an underscore. WordPress doesn't emit any, but the marker costs nothing.
 touch "${OUT}/.nojekyll"
 
-# -- Markdown Viewer for Custom JS Examples --
-cp WP_GTM_CUSTOM_JS_EXAMPLES.md "${OUT}/"
-cat > "${OUT}/custom-js-examples.html" <<'EOF'
+# -- Markdown Viewers for the per-CMS Custom JS Examples --
+# The WordPress page keeps the unqualified filename: it was published first and
+# the URL is already out in the world.
+CMS_PAGES=(
+	"custom-js-examples|WP_GTM_CUSTOM_JS_EXAMPLES.md|WordPress"
+	"custom-js-examples-drupal|DRUPAL_GTM_CUSTOM_JS_EXAMPLES.md|Drupal"
+	"custom-js-examples-joomla|JOOMLA_GTM_CUSTOM_JS_EXAMPLES.md|Joomla"
+	"custom-js-examples-magento|MAGENTO_GTM_CUSTOM_JS_EXAMPLES.md|Magento"
+	"custom-js-examples-ghost|GHOST_GTM_CUSTOM_JS_EXAMPLES.md|Ghost"
+)
+
+for entry in "${CMS_PAGES[@]}"; do
+	IFS='|' read -r slug md label <<< "${entry}"
+	cp "${md}" "${OUT}/"
+
+	# The same bar the lab pages carry in their header, with the current platform
+	# rendered as a filled pill rather than a link.
+	switcher=""
+	for other in "${CMS_PAGES[@]}"; do
+		IFS='|' read -r oslug omd olabel <<< "${other}"
+		if [[ "${oslug}" == "${slug}" ]]; then
+			switcher+="
+                <span class=\"dllab-cmsbar-current\" aria-current=\"page\">${olabel}</span>"
+		else
+			switcher+="
+                <a href=\"${oslug}.html\">${olabel}</a>"
+		fi
+	done
+
+	cat > "${OUT}/${slug}.html" <<EOF
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Custom JS Examples - dataLayer Lab</title>
+    <title>${label} Custom JS Examples - dataLayer Lab</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown.min.css">
     <style>
         body { box-sizing: border-box; min-width: 200px; max-width: 980px; margin: 0 auto; padding: 45px; background: #fff; }
         @media (max-width: 767px) { body { padding: 15px; } }
         .back-link { display: inline-block; margin-bottom: 20px; text-decoration: none; font-weight: bold; }
+        /* The same bar the lab pages carry, inlined: these viewers are bare
+           github-markdown pages and never load lab.css. Boxed rather than
+           borderless, because here there is no site header to hang off. */
+        .dllab-cmsbar {
+            --bar-fg: #e3eaf2; --bar-mut: #9fb0c4; --bar-line: #2b3644; --bar-accent: #6fb4ff;
+            background: #131a23; border: 1px solid var(--bar-line); border-radius: 10px;
+            padding: .55rem .7rem; margin-bottom: 24px;
+        }
+        .dllab-cmsbar-inner { display: flex; align-items: center; gap: .4rem 1rem; flex-wrap: wrap; }
+        .dllab-cmsbar-label { font-size: .7rem; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--bar-mut); }
+        .dllab-cmsbar-links { display: flex; flex-wrap: wrap; gap: .35rem; }
+        .dllab-cmsbar a, .dllab-cmsbar-current {
+            border: 1px solid var(--bar-line); border-radius: 999px;
+            padding: .2rem .7rem; font-size: .84rem; line-height: 1.4; text-decoration: none;
+        }
+        .dllab-cmsbar a { color: var(--bar-fg); }
+        .dllab-cmsbar a:hover, .dllab-cmsbar a:focus-visible { border-color: var(--bar-accent); color: var(--bar-accent); }
+        .dllab-cmsbar-current { background: var(--bar-line); color: #fff; font-weight: 600; }
     </style>
 </head>
 <body class="markdown-body">
     <a href="index.html" class="back-link">← Back to dataLayer Lab</a>
+    <div class="dllab-cmsbar">
+        <nav class="dllab-cmsbar-inner" aria-label="Custom JS examples by platform">
+            <span class="dllab-cmsbar-label">Custom JS recipes</span>
+            <div class="dllab-cmsbar-links">${switcher}
+            </div>
+        </nav>
+    </div>
     <div id="content">Loading examples...</div>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
-        fetch('WP_GTM_CUSTOM_JS_EXAMPLES.md')
+        fetch('${md}')
             .then(res => res.text())
             .then(text => { document.getElementById('content').innerHTML = marked.parse(text); })
             .catch(err => { document.getElementById('content').innerHTML = 'Error loading markdown.'; });
@@ -169,16 +222,95 @@ cat > "${OUT}/custom-js-examples.html" <<'EOF'
 </body>
 </html>
 EOF
+done
 
-# Inject a link to it in the static index.html
-python3 - "${OUT}/index.html" <<'PY'
-import sys
-with open(sys.argv[1], 'r') as f:
-    text = f.read()
-btn = '<div style="margin-bottom:20px; text-align:center;"><a href="custom-js-examples.html" class="dllab-btn dllab-btn-ghost">View Custom JS Examples</a></div>'
-text = text.replace('<div class="dllab-grid">', btn + '\n\t<div class="dllab-grid">')
-with open(sys.argv[1], 'w') as f:
-    f.write(text)
+# Inject the Custom JS bar into every exported lab page, as a third row inside
+# the site header — under the site title and main nav, sharing their left edge.
+# Styled by .dllab-cmsbar in lab.css.
+python3 - "${OUT}" <<'PY'
+import os, re, sys
+
+out = sys.argv[1]
+PAGES = [
+    ('custom-js-examples.html', 'WordPress'),
+    ('custom-js-examples-drupal.html', 'Drupal'),
+    ('custom-js-examples-joomla.html', 'Joomla'),
+    ('custom-js-examples-magento.html', 'Magento'),
+    ('custom-js-examples-ghost.html', 'Ghost'),
+]
+
+SITE_HEADER = '<header class="wp-block-template-part">'
+# The header's alignwide flex row: site title, then nav, then (now) the bar.
+HEADER_COLUMN = re.compile(
+    r'<div class="wp-block-group alignwide[^"]*is-content-justification-space-between[^"]*"[^>]*>'
+)
+DIV_TAG = re.compile(r'<(/?)div\b[^>]*>', re.I)
+
+
+def close_index(text, start):
+    """Index of the </div> closing the <div> that begins at `start`.
+
+    Walking the tag depth rather than counting closing tags by eye: the header
+    nests deep enough that a positional guess lands the bar in the wrong
+    container, and does so silently.
+    """
+    depth = 0
+    for m in DIV_TAG.finditer(text, start):
+        depth += -1 if m.group(1) else 1
+        if depth == 0:
+            return m.start()
+    return -1
+
+
+def bar(prefix):
+    i = '\t\t\t'
+    links = ('\n' + i + '\t\t\t').join(
+        f'<a href="{prefix}{href}">{label}</a>' for href, label in PAGES
+    )
+    return (
+        f'\n{i}<div class="dllab-cmsbar">\n'
+        f'{i}\t<nav class="dllab-cmsbar-inner" aria-label="Custom JS examples by platform">\n'
+        f'{i}\t\t<span class="dllab-cmsbar-label">Custom JS recipes</span>\n'
+        f'{i}\t\t<div class="dllab-cmsbar-links">\n'
+        f'{i}\t\t\t{links}\n'
+        f'{i}\t\t</div>\n'
+        f'{i}\t</nav>\n'
+        f'{i}</div>\n{i}'
+    )
+
+
+injected = 0
+for root, _dirs, files in os.walk(out):
+    for name in sorted(files):
+        if not name.endswith('.html'):
+            continue
+        path = os.path.join(root, name)
+        with open(path, encoding='utf-8', errors='surrogateescape') as fh:
+            text = fh.read()
+
+        # The standalone recipe viewers have no site header and carry their own
+        # copy of the bar, emitted with the page above.
+        if 'wp-site-blocks' not in text:
+            continue
+
+        m = HEADER_COLUMN.search(text, text.find(SITE_HEADER))
+        if not m:
+            print(f"   ! no header column in {os.path.relpath(path, out)}")
+            continue
+        end = close_index(text, m.start())
+        if end < 0:
+            print(f"   ! unbalanced header column in {os.path.relpath(path, out)}")
+            continue
+
+        # Relative depth, so the links resolve from the nested lab pages.
+        rel = os.path.relpath(root, out)
+        depth = 0 if rel == '.' else rel.count(os.sep) + 1
+
+        with open(path, 'w', encoding='utf-8', errors='surrogateescape') as fh:
+            fh.write(text[:end] + bar('../' * depth) + text[end:])
+        injected += 1
+
+print(f"   injected the Custom JS bar into {injected} page(s)")
 PY
 
 cat > "${OUT}/robots.txt" <<'EOF'

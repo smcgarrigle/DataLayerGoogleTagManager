@@ -68,6 +68,92 @@ html, body {
 .dllab-page main { margin-top: 2rem !important; }
 .dllab-page main > .wp-block-group:has(> .wp-block-post-title) { padding-top: 0 !important; }
 
+/* The header's Page List block lists every published page, front page included,
+ * so 'dataLayer Lab' appears twice in a row — once as the site title, once as a
+ * nav item. Drop the nav copy; the title is already a link home. */
+.dllab-page .wp-block-page-list .menu-item-home { display: none; }
+
+/* Hiding that item is what makes the rest of this block necessary. Twenty
+ * Twenty-Five lays the header out as a single space-between row — site title
+ * hard left, nav hard right — and with the duplicate gone the nav is short
+ * enough that the row reads as a hole rather than a layout.
+ *
+ * Stack the two instead, left-aligned, so the title, the nav and the Custom JS
+ * bar below them all share one left edge.
+ *
+ * Matched on the block's semantic classes rather than the generated
+ * .wp-container-core-group-is-layout-<hash> ones, which are regenerated
+ * whenever the template part is edited — a hash-based rule would silently stop
+ * applying. */
+.dllab-page header.wp-block-template-part .wp-block-group.is-content-justification-space-between {
+	/* One step for every vertical gap in the header, so the five bands of
+	 * whitespace — above the title, title to nav, nav to rule, rule to pills,
+	 * below the pills — are equal. Counting the rule as another item in the
+	 * stack is what makes it read as evenly distributed rather than as a divider
+	 * with arbitrary air either side. --spacing--30 (20px) for a roomier header. */
+	--dl-header-rhythm: var(--wp--preset--spacing--20, 10px);
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: flex-start;
+	gap: var(--dl-header-rhythm);
+	/* The theme sets 20px top and bottom inline on this element. */
+	padding-top: var(--dl-header-rhythm) !important;
+	padding-bottom: var(--dl-header-rhythm) !important;
+}
+
+/* The nav sits inside a right-justified wrapper and also carries its own
+ * items-justified-right, which drives --navigation-layout-justify. Unwind both
+ * or it stays pinned right regardless of the column above. */
+.dllab-page header.wp-block-template-part .wp-block-group.is-content-justification-right {
+	justify-content: flex-start;
+}
+.dllab-page header.wp-block-template-part .wp-block-navigation.items-justified-right {
+	--navigation-layout-justification-setting: flex-start;
+	--navigation-layout-justify: flex-start;
+	justify-content: flex-start;
+}
+
+/* Lab content: the same left edge as the site title.
+ *
+ * The header column is alignwide — wide-size, centred in the padded page —
+ * while main's children are ordinary constrained children, centred at their own
+ * narrower max-widths (860px for .dllab, content-size for the post title). That
+ * left the lab content indented a couple of hundred pixels from the title above
+ * it. Starting them where the header column starts puts the page on one left
+ * edge, without widening the 860px reading measure.
+ *
+ * The margin resolves against the same containing block the header column is
+ * centred in, so the two left edges compute identically at every viewport;
+ * max() collapses it to zero below wide-size.
+ *
+ * The post title is a sibling of .dllab on the lab subpages, so it has to move
+ * too or it is left stranded mid-page.
+ *
+ * The theme sets margin-left:auto !important on every constrained child, so
+ * !important here is load-bearing, not decoration. */
+.dllab-page main .dllab,
+.dllab-page main .wp-block-post-title {
+	margin-left: max(0px, calc((100% - var(--wp--style--global--wide-size, 1340px)) / 2)) !important;
+	margin-right: auto !important;
+}
+
+/* Twenty Twenty-Five's footer pattern ships two placeholder nav columns — Blog,
+ * About, FAQs, Authors / Events, Shop, Patterns, Themes — every one of them
+ * pointing at '#'. On a measurement lab that is eight dead click targets sitting
+ * below the real content, so drop the group that holds them. The site title,
+ * tagline and theme credit in the same footer are left alone.
+ *
+ * :has(> …) matches only the nav wrapper, not its ancestors, and `footer`
+ * keeps this off the header's real navigation. */
+.dllab-page footer .wp-block-group:has(> .wp-block-navigation) { display: none; }
+
+/* Removing the navs leaves the pattern's spacers (spacing--40 and --70) and its
+ * generous top padding standing over nothing — the same empty-band problem the
+ * hidden post title had. The outer padding is an inline style, so it needs
+ * !important to yield. */
+.dllab-page footer .wp-block-spacer { display: none; }
+.dllab-page footer > .wp-block-group { padding-top: var(--wp--preset--spacing--30) !important; }
+
 .dllab-hero { padding: 1.2rem 0 .4rem; }
 .dllab-hero h1 {
 	margin: 0 0 .4rem;
@@ -128,6 +214,46 @@ html, body {
 .dllab-ico { opacity: .8; }
 
 .dllab-link { color: var(--dl-accent); text-decoration: underline; }
+
+/* Secondary nav ----------------------------------------------------- */
+
+/* The per-CMS Custom JS recipe pages, as a third row inside the site header —
+ * under the site title and the main nav, sharing their left edge.
+ *
+ * Static build only: export-static.sh generates the viewer pages and injects
+ * this bar, so it is absent on the running WordPress instance, where those
+ * pages don't exist to link to.
+ *
+ * It lives in the header, i.e. outside the .dllab wrapper, so it cannot read
+ * that block's --dl-* variables and carries its own. */
+.dllab-cmsbar {
+	--bar-fg: #e3eaf2;
+	--bar-mut: #9fb0c4;
+	--bar-line: #2b3644;
+	--bar-accent: #6fb4ff;
+	width: 100%;
+	/* One rhythm step below the rule, matching the step above it. The fallback
+	 * matters only if the bar is ever moved out of the header column, which is
+	 * the sole place --dl-header-rhythm is defined. */
+	padding-top: var(--dl-header-rhythm, 10px);
+	border-top: 1px solid var(--bar-line);
+}
+.dllab-cmsbar-inner {
+	display: flex; align-items: center; gap: .4rem 1rem; flex-wrap: wrap;
+}
+.dllab-cmsbar-label {
+	font-size: .7rem; font-weight: 600; letter-spacing: .07em;
+	text-transform: uppercase; color: var(--bar-mut);
+}
+.dllab-cmsbar-links { display: flex; flex-wrap: wrap; gap: .35rem; }
+.dllab-cmsbar a {
+	text-decoration: none; color: var(--bar-fg);
+	border: 1px solid var(--bar-line); border-radius: 999px;
+	padding: .2rem .7rem; font-size: .84rem; line-height: 1.4;
+}
+.dllab-cmsbar a:hover, .dllab-cmsbar a:focus-visible {
+	border-color: var(--bar-accent); color: var(--bar-accent);
+}
 
 /* Index grid -------------------------------------------------------- */
 

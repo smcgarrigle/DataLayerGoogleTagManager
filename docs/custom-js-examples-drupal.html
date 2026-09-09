@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>WordPress Custom JS Examples - dataLayer Lab</title>
+    <title>Drupal Custom JS Examples - dataLayer Lab</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex, nofollow" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown.min.css">
@@ -36,8 +36,8 @@
         <nav class="dllab-cmsbar-inner" aria-label="Custom JS examples by platform">
             <span class="dllab-cmsbar-label">Custom JS recipes</span>
             <div class="dllab-cmsbar-links">
-                <span class="dllab-cmsbar-current" aria-current="page">WordPress</span>
-                <a href="custom-js-examples-drupal.html">Drupal</a>
+                <a href="custom-js-examples.html">WordPress</a>
+                <span class="dllab-cmsbar-current" aria-current="page">Drupal</span>
                 <a href="custom-js-examples-joomla.html">Joomla</a>
                 <a href="custom-js-examples-magento.html">Magento</a>
                 <a href="custom-js-examples-ghost.html">Ghost</a>
@@ -47,7 +47,7 @@
     <div id="content">Loading examples...</div>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
-        fetch('WP_GTM_CUSTOM_JS_EXAMPLES.md')
+        fetch('DRUPAL_GTM_CUSTOM_JS_EXAMPLES.md')
             .then(res => res.text())
             .then(text => { document.getElementById('content').innerHTML = marked.parse(text); })
             .catch(err => { document.getElementById('content').innerHTML = 'Error loading markdown.'; });
