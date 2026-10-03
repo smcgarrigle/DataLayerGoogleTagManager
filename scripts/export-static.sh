@@ -80,9 +80,11 @@ print(f"   renamed {renamed} cache-busted assets")
 
 # --convert-links percent-encodes the '?' it leaves in references, and
 # --adjust-extension may append a second extension, so 'lab.css?ver=1' becomes
-# 'lab.css%3Fver=1.css'. Match both forms and everything trailing.
+# 'lab.css%3Fver=1.css'. Match both forms and everything trailing. Only the
+# ver/v cache-busters: a bare query match also stripped ?id= from GTM's own
+# 'gtm.js?id=' loader, which then 404'd on every page.
 QUERY = re.compile(
-    r'(\.(?:css|js|woff2?|ttf|png|jpe?g|gif|svg|webp|pdf|ico))(?:\?|%3F)[^"\'\s)>]*',
+    r'(\.(?:css|js|woff2?|ttf|png|jpe?g|gif|svg|webp|pdf|ico))(?:\?|%3F)v(?:er)?=[^"\'\s)>]*',
     re.I,
 )
 
@@ -151,6 +153,19 @@ CMS_PAGES=(
 	"custom-js-examples-ghost|GHOST_GTM_CUSTOM_JS_EXAMPLES.md|Ghost"
 )
 
+# The lab pages get GTM from the mu-plugin at mirror time; these viewers are
+# written here, so they need the same container added by hand.
+gtm_head=""
+gtm_body=""
+if [[ "${GTM_CONTAINER_ID:-}" =~ ^GTM-[A-Z0-9]+$ ]]; then
+	gtm_head="<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','${GTM_CONTAINER_ID}');</script>"
+	gtm_body="<noscript><iframe src=\"https://www.googletagmanager.com/ns.html?id=${GTM_CONTAINER_ID}\" height=\"0\" width=\"0\" style=\"display:none;visibility:hidden\"></iframe></noscript>"
+fi
+
 for entry in "${CMS_PAGES[@]}"; do
 	IFS='|' read -r slug md label <<< "${entry}"
 	cp "${md}" "${OUT}/"
@@ -173,6 +188,7 @@ for entry in "${CMS_PAGES[@]}"; do
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    ${gtm_head}
     <meta charset="UTF-8">
     <title>${label} Custom JS Examples - dataLayer Lab</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -203,6 +219,7 @@ for entry in "${CMS_PAGES[@]}"; do
     </style>
 </head>
 <body class="markdown-body">
+    ${gtm_body}
     <a href="index.html" class="back-link">← Back to dataLayer Lab</a>
     <div class="dllab-cmsbar">
         <nav class="dllab-cmsbar-inner" aria-label="Custom JS examples by platform">
